@@ -19,23 +19,31 @@ const postSchema = new mongoose.Schema({
     ref: "User"
   }],
   comments: [{
-    type: String,
-    postedBy: { type: ObjectId, ref: "User" }
+    text: {
+      type: String,
+      required: true
+    },
+    postedBy: {
+      type: ObjectId,
+      ref: "User"
+    }
   }],
   saved: [{
-    savedBy: { type: ObjectId, ref: "User" },
-    postId: { type: ObjectId, ref: "Post" }
+    savedBy: {
+      type: ObjectId,
+      ref: "User"
+    },
+    postId: {
+      type: ObjectId,
+      ref: "Post"
+    }
   }],
   postedBy: {
     type: ObjectId,
     ref: "User"
   },
-  postById: {
+  pic: {  // If this field represents the profile picture of the user who created the post, it should reference the User model, not a string
     type: ObjectId,
-    ref: "User"
-  }, // This field represents the user who created the post
-  pic: {
-    type: String,
     ref: "User"
   }
 }, { timestamps: true });
