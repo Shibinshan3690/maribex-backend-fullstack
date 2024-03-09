@@ -1,46 +1,51 @@
 const mongoose = require("mongoose");
-const { ObjectId } = mongoose.Schema.Types;
+const { Schema } = mongoose;
 
-const userSchema = new mongoose.Schema({
-  userId: {
-    type: ObjectId,
-    required: true,
-    ref: "User" // Reference to the same model
-  },
+const userSchema = new Schema({
   name: {
     type: String,
-    required: true
+    required: false,
+  },
+  username: {
+    type: String,
+    required: true,
+    unique: true,
   },
   email: {
     type: String,
-    required: true
+    required: true,
+    unique: true,
   },
   password: {
     type: String,
-    required: true
+    minlength: 6,
+    required: true,
   },
-  number: {
-    type: Number,
-    required: true
-  },
-  pic: {
-    type: String
+  profilePic: {
+    type: String,
+    default: "",
   },
   followers: [{
-    type: ObjectId,
-    ref: "User"
+    type: Schema.Types.ObjectId,
+    ref: "User",
   }],
   following: [{
-    type: ObjectId,
-    ref: "User"
+    type: Schema.Types.ObjectId,
+    ref: "User",
   }],
+  pic: {
+    type: String,
+  },
   stories: [{
-    user: { type: ObjectId, ref: "User" },
+    user: { type: Schema.Types.ObjectId, ref: "User" },
     storyPic: String,
-    storyData: Date
+    storyData: Date,
   }],
-  resetToken: String,
-  expireToken: String
+  repliedPosts: {
+    type: [Schema.Types.ObjectId],
+    ref: "Post",
+    default: [],
+  },
 }, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);

@@ -2,7 +2,7 @@
 
 
 const express=require('express')
-const requireLogin = require('../../middleware/requireLogin')
+
 const uploadImage = require('../../middleware/imageUpload')
 const  postRouter=express.Router()
 const postController=require('../../controller/postContro')

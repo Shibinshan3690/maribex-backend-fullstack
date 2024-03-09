@@ -1,16 +1,18 @@
-const express=require('express')
-const { register ,login,refreshToken} = require('../../controller/authController') //import register
-const authRouter=express.Router()
+const express = require('express');
+const { signupUser,loginUser,logoutUser } = require('../../controller/authController'); // Import functions from authController
+const authRouter = express.Router();
+
+// Define routes
+authRouter.post("/signup", signupUser);
+authRouter.post("/signin", loginUser);
+authRouter.post("/logout",logoutUser);
 
 
 
-authRouter.post("/signup",register)
-authRouter.post("/signin",login)//add sign controller
-// authRouter.post("/reset-password")
-// authRouter.post("/new-password")
+// authRouter.post("/reset-password");
+// authRouter.post("/new-password");
 
-authRouter.post("/refresh_token",refreshToken)
-authRouter.get("/logout")
+// authRouter.post("/refresh_token", refreshToken);
+// authRouter.get("/logout");
 
-
-module.exports= authRouter
+module.exports = authRouter;
