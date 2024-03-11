@@ -5,7 +5,7 @@ const generateTokenAndSetCookie = (userId, res) => {
         expiresIn: "15d",
     });
 
-    res.cookie("jwt", token, {  
+       res.cookie("jwt", token, {  
         httpOnly: true,
         maxAge: 15 * 24 * 60 * 1000,
         sameSite:"none", 

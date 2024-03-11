@@ -1,7 +1,5 @@
-import jwt  from "jsonwebtoken";
-
-import User from "../model/user"
-
+const jwt =require("jsonwebtoken");
+const  User= require("../model/user");
 
 const protectRoute = async (req, res, next) => {
     try {
@@ -23,5 +21,4 @@ const protectRoute = async (req, res, next) => {
         console.log("Authentication Err",error.message)
     }
 }
-
-export default protectRoute
+module.exports = protectRoute;

@@ -67,7 +67,6 @@ const loginUser = async (req, res) => {
 };
 
 //Logot User
-
 const logoutUser = async (req, res) => {
   try {
     console.log("logoluted");
@@ -79,14 +78,61 @@ const logoutUser = async (req, res) => {
     console.log("Err in logout ", error);
   }
 };
+// Follow UnFollow  
+
+const folloUnfollowUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    const userModify = await User.findById(id);
+    const currentUser = await User.findById(req.user._id).populate("following");
+
+    if (id === req.user._id.toString())
+      return res
+        .status(400)
+        .json({ message: "You can't follow/unfollow yourself!" });
+
+    if (!userModify || !currentUser)
+      return res.status(400).json({ message: "User not found" });
+
+    const isFollowing = currentUser.following
+      .map((user) => user._id.toString())
+      .includes(id);
+    console.log("isfollowing: ", currentUser.following);
+    if (isFollowing) {
+      // unfollow user
+
+      await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } });
+      await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } });
+      res.status(200).json({ message: "User unfollowed successfully" });
+    } else {
+      // follow user
+      await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } });
+      await User.findByIdAndUpdate(req.user._id, { $push: { following: id } });
+      res.status(200).json({ message: "User followed successfully" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    console.log("Error in folloUnfollowUser: ", error.message);
+  }
+};
+
+
+const allUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    if (!users) return res.status(404).json({ message: "Users Not Fount" });
+    res.status(200).json({ Users: users });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    console.log("Error in find all users: ", error.message);
+  }
+};
 
 
 
 
-
-
-
-
-
-
-module.exports={signupUser,loginUser,logoutUser}
+module.exports={signupUser,loginUser,logoutUser,folloUnfollowUser,allUsers}

@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types; 
 
 const postSchema = new mongoose.Schema({
+  postById:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"User",
+   
+},
   title: {
     type: String,
     required: true
@@ -23,20 +28,14 @@ const postSchema = new mongoose.Schema({
       type: String,
       required: true
     },
-    postedBy: {
-      type: ObjectId,
-      ref: "User"
-    }
+   
   }],
   saved: [{
     savedBy: {
       type: ObjectId,
       ref: "User"
     },
-    postId: {
-      type: ObjectId,
-      ref: "Post"
-    }
+  
   }],
   postedBy: {
     type: ObjectId,
