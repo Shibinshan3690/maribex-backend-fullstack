@@ -7,7 +7,7 @@ const authRouter = require("./routes/auth/auth");
 const postRouter = require("./routes/post/post");
 mongoose.set('strictQuery',false)
 
-const port=8004;
+const port=9001;
 app.use(cors());
 app.use(express.json())
 app.use("/api",authRouter) 

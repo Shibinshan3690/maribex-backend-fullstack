@@ -80,45 +80,60 @@ const logoutUser = async (req, res) => {
 };
 // Follow UnFollow  
 
-const folloUnfollowUser = async (req, res) => {
+const userFollow = async (req, res) => {
   try {
-    const { id } = req.params;
-    if (!req.user || !req.user._id) {
-      return res.status(401).json({ message: "User not authenticated" });
+    const logUserId = req.params.id;
+    const { userFollowId } = req.body;
+    console.log(logUserId, userFollowId, 'dssfsdfsdf');
+
+    // Check if the user ID parameters are valid MongoDB ObjectIDs
+    if (!mongoose.Types.ObjectId.isValid(logUserId) || !mongoose.Types.ObjectId.isValid(userFollowId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
     }
 
-    const userModify = await User.findById(id);
-    const currentUser = await User.findById(req.user._id).populate("following");
+    const user = await User.findById(logUserId);
+    const userToFollow = await User.findById(userFollowId);
+    
+    // Check if both users exist
+    if (!user || !userToFollow) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
-    if (id === req.user._id.toString())
-      return res
-        .status(400)
-        .json({ message: "You can't follow/unfollow yourself!" });
+    // Check if the user is already following the target user
+    const followingUser = user.following.includes(userFollowId);
 
-    if (!userModify || !currentUser)
-      return res.status(400).json({ message: "User not found" });
-
-    const isFollowing = currentUser.following
-      .map((user) => user._id.toString())
-      .includes(id);
-    console.log("isfollowing: ", currentUser.following);
-    if (isFollowing) {
-      // unfollow user
-
-      await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } });
-      await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } });
-      res.status(200).json({ message: "User unfollowed successfully" });
+    if (followingUser) {
+      // If already following, unfollow the user
+      await Promise.all([
+        User.updateOne({ _id: logUserId }, { $pull: { following: userFollowId } }),
+        User.updateOne({ _id: userFollowId }, { $pull: { followers: logUserId } })
+      ]);
+      const updatedUser = await User.findById(logUserId);
+      const followerCount = updatedUser.followers.length; // Update follower count
+      return res.status(200).json({ message: 'User unfollowed successfully', followerCount });
     } else {
-      // follow user
-      await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } });
-      await User.findByIdAndUpdate(req.user._id, { $push: { following: id } });
-      res.status(200).json({ message: "User followed successfully" });
+      // If not following, follow the user
+      user.following.push(userFollowId);
+      userToFollow.followers.push(logUserId);
+      await Promise.all([
+        user.save(),
+        userToFollow.save()
+      ]);
+      const updatedUser = await User.findById(logUserId);
+      const followerCount = updatedUser.followers.length; // Update follower count
+      return res.status(200).json({ message: 'User followed successfully', followerCount });
     }
   } catch (error) {
-    res.status(500).json({ error: error.message });
-    console.log("Error in folloUnfollowUser: ", error.message);
+    console.error(error, 'follow');
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+
+
+
+
+
 
 
 const allUsers = async (req, res) => {
@@ -132,7 +147,21 @@ const allUsers = async (req, res) => {
   }
 };
 
+const getUserProfile=async (req,res)=>{
+  try {
+      const userId=req.params.id;
+      const user=await User.findById(userId);
+        console.log("userId",user)
+      if(!user)return res.status(404).json({error:'user not found'})
+      res.status(200).json({
+          message:'successfully fetched user profile',
+          user:user
+      })
+  } catch (error) {
+      console.error(error,'get user profile')
+      res.status(500).json({error:'internal server errror'})
+  }
+}
 
 
-
-module.exports={signupUser,loginUser,logoutUser,folloUnfollowUser,allUsers}
+module.exports={signupUser,loginUser,logoutUser,userFollow,allUsers,getUserProfile,}
