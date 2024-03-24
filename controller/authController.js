@@ -130,12 +130,6 @@ const userFollow = async (req, res) => {
 };
 
 
-
-
-
-
-
-
 const allUsers = async (req, res) => {
   try {
     const users = await User.find();
@@ -162,6 +156,45 @@ const getUserProfile=async (req,res)=>{
       res.status(500).json({error:'internal server errror'})
   }
 }
+const updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const {  username, email, bio } = req.body;
+    const { profilePic } = req.body;
+    console.log(profilePic);
+
+    console.log("nameeeee ",  username, email, bio);
+    let user = await User.findById(userId);
+    if (!user) return res.status(400).json({ error: "User not found" });
+
+    if (req.params.id !== userId.toString())
+      return res
+        .status(400)
+        .json({ error: "You can't Update other user's profile" });
+
+    if (profilePic) {
+      if (user.profilePic) {
+        await cloudinary.uploader.destroy(
+          user.profilePic.split("/").pop(".")[0]
+        );
+      }
+    }
+
+  
+    user.email = email || user.email;
+    user.username = username || user.username;
+    user.bio = bio || user.bio;
+    user.profilePic = profilePic || user.profilePic;
+
+    user = await user.save();
+
+    res.status(200).json({ message: "Profile upadated succesfully", user });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    console.log("Error in updateUser: ", error.message);
+  }
+};
 
 
-module.exports={signupUser,loginUser,logoutUser,userFollow,allUsers,getUserProfile,}
+
+module.exports={signupUser,loginUser,logoutUser,userFollow,allUsers,getUserProfile,updateUserProfile}
