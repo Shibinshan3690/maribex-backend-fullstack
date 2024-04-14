@@ -4,6 +4,7 @@ const protectRoute = require('../../middleware/protectRout'); // Use require for
 const  uploadImage = require('../../middleware/imageUpload');
 const authRouter = express.Router();
 const  userController=require("../../routes/auth/auth");
+const UploadImage = require('../../middleware/UploadImage');
 
 
 
@@ -12,8 +13,10 @@ authRouter.post("/signin", loginUser);
 authRouter.post("/logout", logoutUser);
 authRouter.get("/users", allUsers);
 authRouter.get("/getUser/:id",getUserProfile)
-authRouter.post('/follow/:id',userFollow)
-// authRouter.patch("/updateProfile/:id",uploadImage,(userController.updateUserProfile))
+authRouter.post("/follow/:id",userFollow)
+
+authRouter.patch('/updateProfile/:id',UploadImage('profilePic'), updateUserProfile)
+
 
 
 

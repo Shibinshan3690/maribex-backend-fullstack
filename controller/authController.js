@@ -2,7 +2,7 @@
 const User = require("../model/user");
 const bcrypt = require("bcryptjs");
 const generateTokenAndSetCookie = require("../utils/generateTokenAndSetCookie");
-
+const cloudinary = require("cloudinary").v2;
 
 // singup user
 
@@ -133,9 +133,10 @@ const userFollow = async (req, res) => {
   try {
     const logUserId = req.params.id;
     const { userFollowId } = req.body;
-
+    console.log("ideee",userFollowId)
     const user = await User.findById(logUserId);
     const userToFollow = await User.findById(userFollowId);
+
     if (!user || !userToFollow)
       return res.status(404).json({ error: "User not found" });
 
@@ -171,6 +172,7 @@ const userFollow = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 const allUsers = async (req, res) => {
   try {
     const users = await User.find();
@@ -182,13 +184,11 @@ const allUsers = async (req, res) => {
   }
 };
 
-
-
 const getUserProfile=async (req,res)=>{
-  try {
+      try {
       const userId=req.params.id;
       const user=await User.findById(userId);
-        console.log("userId",user)
+      
       if(!user)return res.status(404).json({error:'user not found'})
       res.status(200).json({
           message:'successfully fetched user profile',
@@ -199,14 +199,16 @@ const getUserProfile=async (req,res)=>{
       res.status(500).json({error:'internal server errror'})
   }
 }
+
+
 const updateUserProfile = async (req, res) => {
   try {
     const userId = req.params.id;
-    const { name, username, email, bio } = req.body;
+    const {  username, email, bio } = req.body;
     const { profilePic } = req.body;
-    console.log(profilePic);
+    
 
-    console.log("nameeeee ", name, username, email, bio);
+    console.log( username, email, bio);
     let user = await User.findById(userId);
     if (!user) return res.status(400).json({ error: "User not found" });
 
@@ -223,7 +225,6 @@ const updateUserProfile = async (req, res) => {
       }
     }
 
-    user.name = name || user.name;
     user.email = email || user.email;
     user.username = username || user.username;
     user.bio = bio || user.bio;
@@ -233,11 +234,10 @@ const updateUserProfile = async (req, res) => {
 
     res.status(200).json({ message: "Profile upadated succesfully", user });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error  });
     console.log("Error in updateUser: ", error.message);
   }
 };
-
 
 
 
