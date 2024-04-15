@@ -138,7 +138,7 @@ const userFollow = async (req, res) => {
     const userToFollow = await User.findById(userFollowId);
 
     if (!user || !userToFollow)
-      return res.status(404).json({ error: "User not found" });
+    return res.status(404).json({ error: "User not found" });
 
     const followingUser = user.following.includes(userFollowId);
     if (followingUser) {
@@ -157,18 +157,56 @@ const userFollow = async (req, res) => {
       await user.save();
       await userToFollow.save();
 
-      const notification = new Notification({
-        senderUserId: logUserId,
-        reciveUserId: userFollowId,
-        type: "follow",
-        description: `Started following you.`,
-      });
-      await notification.save();
+      // const notification = new Notification({
+      //   senderUserId: logUserId,
+      //   reciveUserId: userFollowId,
+      //   type: "follow",
+      //   description: `Started following you.`,
+      // });
+      // await notification.save();
 
       res.status(200).json({ message: "User followed successfully" });
     }
   } catch (error) {
     console.error(error, "userFollow");
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const userUnfollow = async (req, res) => {
+  try {
+    const logUserId = req.params.id;
+    const { userUnfollowId } = req.body;
+    console.log(logUserId, userUnfollowId, "unfollow");
+
+    const user = await User.findById(logUserId);
+    const userToUnfollow = await User.findById(userUnfollowId);
+    if (!user || !userToUnfollow)
+      return res.status(404).json({ error: "User not found" });
+
+    const followingUser = user.following.includes(userUnfollowId);
+    if (followingUser) {
+      await User.updateOne(
+        { _id: logUserId },
+        { $pull: { following: userUnfollowId } }
+      );
+      await User.updateOne(
+        { _id: userUnfollowId },
+        { $pull: { followers: logUserId } }
+      );
+
+      // await Notification.deleteOne({
+      //   senderUserId: logUserId,
+      //   reciveUserId: userUnfollowId,
+      //   type: "follow"
+      // });
+      
+      return res.status(200).json({ message: "User unfollowed successfully" });
+    } else {
+      return res.status(400).json({ error: "You are not following this user" });
+    }
+  } catch (error) {
+    console.error(error, "unfollow");
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -241,4 +279,4 @@ const updateUserProfile = async (req, res) => {
 
 
 
-module.exports={signupUser,loginUser,logoutUser,userFollow,allUsers,getUserProfile,updateUserProfile}
+module.exports={signupUser,loginUser,logoutUser,userFollow,allUsers,getUserProfile,updateUserProfile,userUnfollow}
