@@ -70,7 +70,8 @@
 const getPostById = async (req, res) => {
   try {
     const postId = req.params.id;
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId).populate("postById");
+    console.log(post);
     if (!post) {
       return res.status(404).json({ error: 'post is not found' });
     }
@@ -157,7 +158,6 @@ const unlikePost = async (req, res) => {
   try {
     const postId = req.params.id;
     const { userId } = req.body;
-
     const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
@@ -194,7 +194,7 @@ const comments = async (req, res) => {
     const postId = req.params.id;
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ error: 'Post not found' });
-    post.comments.push({ text, postedBy: userId });
+    post.comments.push({ text, userId: userId });
     await post.save();
     return res.status(201).json({
       message: 'Successfully added reply',
@@ -208,7 +208,13 @@ const comments = async (req, res) => {
 const getcomments=async (req,res)=>{
     try {
       const postId=req.params.id;
-      const postReply=await Post.findById(postId).populate('comments');
+      const postReply=await Post.findById(postId).populate({
+        path: 'comments',
+        populate: {
+            path: 'userId'
+        }
+    });
+      console.log(postReply);
       if(!postReply)return res.status(404).json({error:"post not found"})
 
       res.status(200).json({
