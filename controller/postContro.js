@@ -71,7 +71,7 @@ const getPostById = async (req, res) => {
   try {
     const postId = req.params.id;
     const post = await Post.findById(postId).populate("postById");
-    console.log(post);
+   
     if (!post) {
       return res.status(404).json({ error: 'post is not found' });
     }

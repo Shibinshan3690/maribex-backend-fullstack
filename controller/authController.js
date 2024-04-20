@@ -78,62 +78,12 @@ const logoutUser = async (req, res) => {
     console.log("Err in logout ", error);
   }
 };
-// Follow UnFollow  
 
-// const userFollow = async (req, res) => {
-//   try {
-//     const logUserId = req.params.id;
-//     const { userFollowId } = req.body;
-//     console.log(logUserId, userFollowId, 'dssfsdfsdf');
-
-//     // Check if the user ID parameters are valid MongoDB ObjectIDs
-//     if (!mongoose.Types.ObjectId.isValid(logUserId) || !mongoose.Types.ObjectId.isValid(userFollowId)) {
-//       return res.status(400).json({ error: 'Invalid user ID' });
-//     }
-
-//     const user = await User.findById(logUserId);
-//     const userToFollow = await User.findById(userFollowId);
-    
-//     // Check if both users exist
-//     if (!user || !userToFollow) {
-//       return res.status(404).json({ error: 'User not found' });
-//     }
-
-//     // Check if the user is already following the target user
-//     const followingUser = user.following.includes(userFollowId);
-
-//     if (followingUser) {
-//       // If already following, unfollow the user
-//       await Promise.all([
-//         User.updateOne({ _id: logUserId }, { $pull: { following: userFollowId } }),
-//         User.updateOne({ _id: userFollowId }, { $pull: { followers: logUserId } })
-//       ]);
-//       const updatedUser = await User.findById(logUserId);
-//       const followerCount = updatedUser.followers.length; // Update follower count
-//       return res.status(200).json({ message: 'User unfollowed successfully', followerCount });
-//     } else {
-//       // If not following, follow the user
-//       user.following.push(userFollowId);
-//       userToFollow.followers.push(logUserId);
-//       await Promise.all([
-//         user.save(),
-//         userToFollow.save()
-//       ]);
-//       const updatedUser = await User.findById(logUserId);
-//       const followerCount = updatedUser.followers.length; // Update follower count
-//       return res.status(200).json({ message: 'User followed successfully', followerCount });
-//     }
-//   } catch (error) {
-//     console.error(error, 'follow');
-//     return res.status(500).json({ error: 'Internal server error' });
-//   }
-// };
 
 const userFollow = async (req, res) => {
   try {
     const logUserId = req.params.id;
     const { userFollowId } = req.body;
-    console.log("ideee",userFollowId)
     const user = await User.findById(logUserId);
     const userToFollow = await User.findById(userFollowId);
 
@@ -177,7 +127,7 @@ const userUnfollow = async (req, res) => {
   try {
     const logUserId = req.params.id;
     const { userUnfollowId } = req.body;
-    console.log(logUserId, userUnfollowId, "unfollow");
+    // console.log(logUserId, userUnfollowId, "unfollow");
 
     const user = await User.findById(logUserId);
     const userToUnfollow = await User.findById(userUnfollowId);
@@ -239,6 +189,8 @@ const getUserProfile=async (req,res)=>{
 }
 
 
+
+
 const updateUserProfile = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -278,5 +230,20 @@ const updateUserProfile = async (req, res) => {
 };
 
 
+const getFollowingList = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).populate("following");
+    if (!user) return res.status(404).json({ error: "user not found" });
+    res.status(200).json({
+      message: "successfully fetched following list",
+      user,
+    });
+  } catch (error) {
+    console.error(error, "get following");
+    res.status(500).json({ error: "internal server error" });
+  }
+};
 
-module.exports={signupUser,loginUser,logoutUser,userFollow,allUsers,getUserProfile,updateUserProfile,userUnfollow}
+
+module.exports={signupUser,loginUser,logoutUser,userFollow,allUsers,getUserProfile,updateUserProfile,userUnfollow,getFollowingList}
