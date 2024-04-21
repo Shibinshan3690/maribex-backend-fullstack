@@ -79,7 +79,7 @@ const logoutUser = async (req, res) => {
   }
 };
 
-
+ 
 const userFollow = async (req, res) => {
   try {
     const logUserId = req.params.id;
@@ -96,7 +96,7 @@ const userFollow = async (req, res) => {
         { _id: logUserId },
         { $pull: { following: userFollowId } }
       );
-      await User.updateOne(
+      const user = await User.updateOne(
         { _id: userFollowId },
         { $pull: { followers: logUserId } }
       );
@@ -115,7 +115,7 @@ const userFollow = async (req, res) => {
       // });
       // await notification.save();
 
-      res.status(200).json({ message: "User followed successfully" });
+      res.status(200).json({ message: "User followed successfully",user: user});
     }
   } catch (error) {
     console.error(error, "userFollow");
