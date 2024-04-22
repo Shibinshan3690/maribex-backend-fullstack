@@ -25,6 +25,10 @@ const userSchema = new Schema({
     type: String,
     default: "",
 } ,
+bio: {
+  type: String,
+  default: "",
+},
   followers: [{
     type: Schema.Types.ObjectId,
     ref: "User",
