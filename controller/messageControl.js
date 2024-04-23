@@ -4,8 +4,6 @@ const messageModel=require("../model/messageModel");
 
 const createMessage=async(req,res)=>{
        const {chatId,senderId,text}=req.body;
-
-
        const message=new messageModel({
         chatId,
         senderId,
@@ -19,16 +17,17 @@ const createMessage=async(req,res)=>{
           res.status(500).json(error)
        }
 }
+
 //getMessage
 
 const getMessage=async(req,res)=>{
       const {chatId}=req.params;
-
       try{
         const messages = await messageModel.find({chatId});
-        res.status(200).json(message)
+        res.status(200).json(messages)
       }catch(error){
         console.log(error)
+        res.status(500).json(error)
       }
 }
 

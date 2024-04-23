@@ -6,6 +6,7 @@ const bodyParser=require("body-parser");
 const authRouter = require("./routes/auth/auth");
 const postRouter = require("./routes/post/post");
 const chatRouter=require("./routes/chatRouter");
+const messageRouter=require("./routes/messageRouter");
 
 
 mongoose.set('strictQuery',false)
@@ -13,9 +14,10 @@ mongoose.set('strictQuery',false)
 const port=9001;
 app.use(cors());
 app.use(express.json())
-app.use("/api",authRouter) 
-app.use("/api",postRouter)
-app.use("/api/chat",chatRouter)
+app.use("/api",authRouter) ;
+app.use("/api",postRouter);
+app.use("/api/chat",chatRouter);
+app.use("/api/messages",messageRouter)
 
 
 
