@@ -41,12 +41,13 @@ postRouter.get("/post/chat/msg/:user1Id/:user2Id", async (req, res) => {
     try {
         const from = req.params.user1Id;
         const to = req.params.user2Id;
+      
 
         const newMessages = await messageSchema.find({
             ChatUser: {
                 $all: [from, to],
-            }
-        }).sort({ updatedAt: -1 });
+            } 
+        }).sort({ updatedAt:1 });
 
         const allMessages = newMessages.map((msg) => {
             return {
