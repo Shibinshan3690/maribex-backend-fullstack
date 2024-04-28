@@ -66,24 +66,24 @@
         };
     
 
-
-const getPostById = async (req, res) => {
-  try {
-    const postId = req.params.id;
-    const post = await Post.findById(postId).populate("postById");
-   
-    if (!post) {
-      return res.status(404).json({ error: 'post is not found' });
-    }
-    res.status(200).json({
-      message: 'successfully fetched post',
-      post: post
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'internal server error' });
-  }
-}
+        const getPostById = async (req, res) => {
+          try {
+            const postId = req.params.id;
+            const post = await Post.findById(postId).populate("postById");
+           
+            if (!post) {
+              return res.status(404).json({ error: 'post is not found' });
+            }
+            res.status(200).json({
+              message: 'successfully fetched post',
+              post: post
+            });
+          } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'internal server error' });
+          }
+        }
+        
 const updatePost=async(req,res)=>{
   try {
       const {title,body,image}=req.body;
@@ -127,24 +127,14 @@ const likePost = async (req, res) => {
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
     }
-
     const likedPost = post.likes.includes(userId);
-
     if (likedPost) {
       await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
       res.status(200).json({ message: "Post unliked successfully" });
     } else {
       post.likes.push(userId);
       await post.save();
-      // Create notification
-      // const notification = new Notification({
-      //   senderUserId: userId,
-      //   reciveUserId: post.postById,
-      //   postId: postId,
-      //   type: "like",
-      //   description: `Liked your post.`,
-      // });
-      // await notification.save();
+      
       res.status(200).json({ message: "Post liked successfully" });
     }
   } catch (error) {
@@ -172,14 +162,6 @@ const unlikePost = async (req, res) => {
     }
 
     await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
-
-    // await Notification.deleteOne({
-    //   senderUserId: userId,
-    //   reciveUserId: post.postById,
-    //   postId: postId,
-    //   type: "like",
-    // });
-
     res.status(200).json({ message: "Post unliked successfully" });
   } catch (error) {
     console.error(error, "Error unliking post");
