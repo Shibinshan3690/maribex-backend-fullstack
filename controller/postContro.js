@@ -207,8 +207,54 @@ const getcomments=async (req,res)=>{
       console.error(error,'error get reply')
       }
 } 
-       module.exports={createPost,getAllPosts,getUserPost,getPostById
-      ,updatePost,deletePost,likePost,comments,getcomments,unlikePost}
 
+ //Save
 
+const save = async (req, res) => {
   
+
+  try {
+    const postId = req.params.id;
+    const { userId } = req.body;
+
+    const post = await Post.findById(postId);
+    console.log(post,"postt")
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+    if (post.saved.some(savedItem => savedItem.savedBy.toString() === userId)) {
+      return res.status(400).json({ error: 'Post already saved by this user' });
+    }
+    // Add the user to the list of savedBy
+    post.saved.push({ savedBy: userId });
+    await post.save();
+    res.status(200).json({ message: 'Post saved successfully' });
+  } catch (error) {
+    console.error('Error saving post:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+const getSavedPosts = async (req, res) => {
+  try {
+    const userId = req.params.userId; // Assuming userId is part of the route path
+    const savedPosts = await Post.find({ 'saved.savedBy': userId });
+
+    if (savedPosts.length === 0) {
+      return res.status(404).json({ message: 'No saved posts found for this user' });
+    }
+
+    res.status(200).json(savedPosts);
+  } catch (error) {
+    console.error('Error fetching saved posts:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+
+
+       module.exports={createPost,getAllPosts,getUserPost,getPostById
+      ,updatePost,deletePost,likePost,comments,getcomments,unlikePost,save,getSavedPosts}
+
+
+  //'/api/post/save/:postId',

@@ -14,7 +14,9 @@ postRouter.delete('/post/:id',(postController.deletePost));
 postRouter.post('/post/like/:id',(postController.likePost));
 postRouter.post('/post/unlike/:id',(postController.unlikePost));
 postRouter.post('/post/comments/:id', postController.comments);
-postRouter.get('/post/getcomments/:id',(postController.getcomments))
+postRouter.get('/post/getcomments/:id',(postController.getcomments));
+postRouter.post(`/post/save/:id`,(postController.save));
+postRouter.get(`/post/saved/:id`,(postController.getSavedPosts));
 
 postRouter.post("/post/msg", async (req, res) => {
     try {
