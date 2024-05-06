@@ -8,6 +8,7 @@ const cloudinary = require("cloudinary").v2;
 
 const signupUser = async (req, res) => {
   try {
+    console.log('object')
     const { name, email, username, password } = req.body;
 
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });

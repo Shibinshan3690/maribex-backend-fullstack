@@ -18,17 +18,18 @@ app.use("/api",postRouter);
 
 
 
+const connectDB= async function(){
+   try {
+    await mongoose.connect(process.env.MONGOURI);
+      console.log('db connected successfully')
+   } catch (error) {
+    console.log(error,'error connecting')
+   }
+}
+
+connectDB()
 
 
-
-mongoose.connect("mongodb://localhost:27017/backend", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  
-});
-mongoose.connection.on('error',(error)=>{
-      console.log("errorrrrr")
-})
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(express.json());
